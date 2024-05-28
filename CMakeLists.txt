@@ -8,4 +8,4 @@ add_executable(Work14 main.c
         student.h
         list.c
         list.h
-        macros.h)
+)
