@@ -20,6 +20,19 @@ List* InitList() {
     return list;
 }
 
+Student* InitStudent(int age, char* name, char* surname, char* gender, char* group, int mathGrade, int physicGrade, int chemistryGrade) {
+    Student* student = malloc(sizeof(Student));
+    student->age = age;
+    student->name = strdup(name);
+    student->surname = strdup(surname);
+    student->gender = strdup(gender);
+    student->group = strdup(group);
+    student->mathGrade = mathGrade;
+    student->physicGrade = physicGrade;
+    student->chemistryGrade = chemistryGrade;
+    return student;
+}
+
 void* Append(void* list, void* student) {
     List* l = (List*)list;
     Student* s = (Student*)student;
@@ -42,7 +55,7 @@ void* PrintExcellentFemaleStudents(void* list) {
     List* l = (List*)list;
     Node* current = l->head;
     while (current != NULL) {
-        if (strcmp(current->student->gender, "???") == 0 &&
+        if (strcmp(current->student->gender, "female") == 0 &&
             current->student->physicGrade == 5 &&
             current->student->chemistryGrade == 5) {
             printf("Name: %s %s\n", current->student->name, current->student->surname);
@@ -80,7 +93,12 @@ void* PrintList(void* list) {
     List* l = (List*)list;
     Node* current = l->head;
     while (current != NULL) {
-        printf("%s - %d\n", current->student->name, current->student->physicGrade);
+        printf("Name: %s %s\n", current->student->name, current->student->surname);
+        printf("Group: %s\n", current->student->group);
+        printf("Age: %d\n", current->student->age);
+        printf("Math Grade: %d\n", current->student->mathGrade);
+        printf("Physic Grade: %d\n", current->student->physicGrade);
+        printf("Chemistry Grade: %d\n\n", current->student->chemistryGrade);
         current = current->next;
     }
     return NULL;
@@ -154,22 +172,25 @@ void SaveListToBinaryFile(void* list, const char* filename) {
     Node* current = l->head;
     while (current != NULL) {
         Student* s = current->student;
+
+        int nameLen = strlen(s->name) + 1;
+        int surnameLen = strlen(s->surname) + 1;
+        int genderLen = strlen(s->gender) + 1;
+        int groupLen = strlen(s->group) + 1;
+
         fwrite(&s->age, sizeof(int), 1, file);
-        size_t nameLen = strlen(s->name) + 1;
-        fwrite(&nameLen, sizeof(size_t), 1, file);
+        fwrite(&nameLen, sizeof(int), 1, file);
         fwrite(s->name, sizeof(char), nameLen, file);
-        size_t surnameLen = strlen(s->surname) + 1;
-        fwrite(&surnameLen, sizeof(size_t), 1, file);
+        fwrite(&surnameLen, sizeof(int), 1, file);
         fwrite(s->surname, sizeof(char), surnameLen, file);
-        size_t genderLen = strlen(s->gender) + 1;
-        fwrite(&genderLen, sizeof(size_t), 1, file);
+        fwrite(&genderLen, sizeof(int), 1, file);
         fwrite(s->gender, sizeof(char), genderLen, file);
-        size_t groupLen = strlen(s->group) + 1;
-        fwrite(&groupLen, sizeof(size_t), 1, file);
+        fwrite(&groupLen, sizeof(int), 1, file);
         fwrite(s->group, sizeof(char), groupLen, file);
         fwrite(&s->mathGrade, sizeof(int), 1, file);
         fwrite(&s->physicGrade, sizeof(int), 1, file);
         fwrite(&s->chemistryGrade, sizeof(int), 1, file);
+
         current = current->next;
     }
     fclose(file);
@@ -186,18 +207,19 @@ void LoadListFromBinaryFile(void* list, const char* filename) {
 
     while (!feof(file)) {
         int age, mathGrade, physicGrade, chemistryGrade;
-        size_t nameLen, surnameLen, genderLen, groupLen;
-        fread(&age, sizeof(int), 1, file);
-        fread(&nameLen, sizeof(size_t), 1, file);
+        int nameLen, surnameLen, genderLen, groupLen;
+
+        if (fread(&age, sizeof(int), 1, file) != 1) break;
+        fread(&nameLen, sizeof(int), 1, file);
         char* name = malloc(nameLen);
         fread(name, sizeof(char), nameLen, file);
-        fread(&surnameLen, sizeof(size_t), 1, file);
+        fread(&surnameLen, sizeof(int), 1, file);
         char* surname = malloc(surnameLen);
         fread(surname, sizeof(char), surnameLen, file);
-        fread(&genderLen, sizeof(size_t), 1, file);
+        fread(&genderLen, sizeof(int), 1, file);
         char* gender = malloc(genderLen);
         fread(gender, sizeof(char), genderLen, file);
-        fread(&groupLen, sizeof(size_t), 1, file);
+        fread(&groupLen, sizeof(int), 1, file);
         char* group = malloc(groupLen);
         fread(group, sizeof(char), groupLen, file);
         fread(&mathGrade, sizeof(int), 1, file);

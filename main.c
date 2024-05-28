@@ -7,10 +7,10 @@ int main() {
     setlocale(LC_ALL, "RUS");
 
     List* StudentList = InitList();
-    StudentList->append(StudentList, InitStudent(23, "Ksenia", "Tfgd", "???", "ghgjf4", 4, 5, 5));
-    StudentList->append(StudentList, InitStudent(14, "Vaho", "Tfgd", "???", "ghgjf4", 4, 4, 3));
-    StudentList->append(StudentList, InitStudent(17, "Timur", "Tfgd", "???", "ghgjf4", 4, 3, 3));
-    StudentList->append(StudentList, InitStudent(13, "Tim", "Ted", "M", "ISP-test", 5, 5, 5));
+    StudentList->append(StudentList, InitStudent(23, "Ksenia", "Tfgd", "female", "ghgjf4", 4, 5, 5));
+    StudentList->append(StudentList, InitStudent(14, "Vaho", "Tfgd", "male", "ghgjf4", 4, 4, 3));
+    StudentList->append(StudentList, InitStudent(17, "Timur", "Tfgd", "male", "ghgjf4", 4, 3, 3));
+    StudentList->append(StudentList, InitStudent(13, "Tim", "Ted", "male", "ISP-test", 5, 5, 5));
 
     // Сохранение списка студентов в текстовый файл
     StudentList->save(StudentList, "students.txt");
