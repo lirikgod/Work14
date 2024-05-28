@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <locale.h>
 #include "list.h"
+#include "macros.h"
 
 int main() {
     setlocale(LC_ALL, "RUS");
@@ -12,23 +13,26 @@ int main() {
     StudentList->append(StudentList, InitStudent(17, "Timur", "Tfgd", "???", "ghgjf4", 4, 3, 3));
     StudentList->append(StudentList, InitStudent(13, "Tim", "Ted", "M", "ISP-test", 5, 5, 5));
 
-    // Сохранение списка студентов в файл
+    // Сохранение списка студентов в текстовый файл
     StudentList->save(StudentList, "students.txt");
 
-    // Очистка списка студентов
-    StudentList->free(StudentList);
-
-    // Инициализация нового списка студентов
+    // Загрузка списка студентов из текстового файла
     List* LoadedStudentList = InitList();
-
-    // Загрузка списка студентов из файла
     LoadedStudentList->load(LoadedStudentList, "students.txt");
-
-    // Печать загруженного списка студентов
     LoadedStudentList->print(LoadedStudentList);
-
-    // Очистка загруженного списка студентов
     LoadedStudentList->free(LoadedStudentList);
+
+    // Сохранение списка студентов в бинарный файл
+    StudentList->saveBinary(StudentList, "students.bin");
+
+    // Загрузка списка студентов из бинарного файла
+    List* LoadedStudentListBinary = InitList();
+    LoadedStudentListBinary->loadBinary(LoadedStudentListBinary, "students.bin");
+    LoadedStudentListBinary->print(LoadedStudentListBinary);
+    LoadedStudentListBinary->free(LoadedStudentListBinary);
+
+    // Очистка исходного списка студентов
+    StudentList->free(StudentList);
 
     return 0;
 }
