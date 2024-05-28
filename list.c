@@ -15,6 +15,8 @@ List* InitList() {
     list->printEtwo = (void (*)(void *)) PrintExcellentStudentsWithoutTwos;
     list->save = (void (*)(void*, const char*)) SaveListToFile;
     list->load = (void (*)(void*, const char*)) LoadListFromFile;
+    list->saveBinary = (void (*)(void*, const char*)) SaveListToBinaryFile;
+    list->loadBinary = (void (*)(void*, const char*)) LoadListFromBinaryFile;
     return list;
 }
 
@@ -139,4 +141,72 @@ void LoadListFromFile(void* list, const char* filename) {
     }
     fclose(file);
     printf("Data successfully loaded from %s\n", filename);
+}
+
+void SaveListToBinaryFile(void* list, const char* filename) {
+    List* l = (List*)list;
+    FILE* file = fopen(filename, "wb");
+    if (file == NULL) {
+        perror("Failed to open binary file for writing");
+        return;
+    }
+
+    Node* current = l->head;
+    while (current != NULL) {
+        Student* s = current->student;
+        fwrite(&s->age, sizeof(int), 1, file);
+        size_t nameLen = strlen(s->name) + 1;
+        fwrite(&nameLen, sizeof(size_t), 1, file);
+        fwrite(s->name, sizeof(char), nameLen, file);
+        size_t surnameLen = strlen(s->surname) + 1;
+        fwrite(&surnameLen, sizeof(size_t), 1, file);
+        fwrite(s->surname, sizeof(char), surnameLen, file);
+        size_t genderLen = strlen(s->gender) + 1;
+        fwrite(&genderLen, sizeof(size_t), 1, file);
+        fwrite(s->gender, sizeof(char), genderLen, file);
+        size_t groupLen = strlen(s->group) + 1;
+        fwrite(&groupLen, sizeof(size_t), 1, file);
+        fwrite(s->group, sizeof(char), groupLen, file);
+        fwrite(&s->mathGrade, sizeof(int), 1, file);
+        fwrite(&s->physicGrade, sizeof(int), 1, file);
+        fwrite(&s->chemistryGrade, sizeof(int), 1, file);
+        current = current->next;
+    }
+    fclose(file);
+    printf("Data successfully saved to binary file %s\n", filename);
+}
+
+void LoadListFromBinaryFile(void* list, const char* filename) {
+    List* l = (List*)list;
+    FILE* file = fopen(filename, "rb");
+    if (file == NULL) {
+        perror("Failed to open binary file for reading");
+        return;
+    }
+
+    while (!feof(file)) {
+        int age, mathGrade, physicGrade, chemistryGrade;
+        size_t nameLen, surnameLen, genderLen, groupLen;
+        fread(&age, sizeof(int), 1, file);
+        fread(&nameLen, sizeof(size_t), 1, file);
+        char* name = malloc(nameLen);
+        fread(name, sizeof(char), nameLen, file);
+        fread(&surnameLen, sizeof(size_t), 1, file);
+        char* surname = malloc(surnameLen);
+        fread(surname, sizeof(char), surnameLen, file);
+        fread(&genderLen, sizeof(size_t), 1, file);
+        char* gender = malloc(genderLen);
+        fread(gender, sizeof(char), genderLen, file);
+        fread(&groupLen, sizeof(size_t), 1, file);
+        char* group = malloc(groupLen);
+        fread(group, sizeof(char), groupLen, file);
+        fread(&mathGrade, sizeof(int), 1, file);
+        fread(&physicGrade, sizeof(int), 1, file);
+        fread(&chemistryGrade, sizeof(int), 1, file);
+
+        Student* student = InitStudent(age, name, surname, gender, group, mathGrade, physicGrade, chemistryGrade);
+        l->append(l, student);
+    }
+    fclose(file);
+    printf("Data successfully loaded from binary file %s\n", filename);
 }
