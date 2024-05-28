@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <locale.h>
 #include "list.h"
-#include "macros.h"
 
 int main() {
     setlocale(LC_ALL, "RUS");
